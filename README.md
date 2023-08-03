@@ -1,2 +1,3 @@
-# LightlessReconstruction
-Analysis tools for lightless (charge only) event reconstruction with standard DUNE APA
+# qpixrec
+
+Repository for Q-Pix reconstruction tools. Different tools will be organized in separate directories
