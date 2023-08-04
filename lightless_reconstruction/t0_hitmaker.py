@@ -276,7 +276,7 @@ for n in range(total_events):
     legend = plt.legend()
 
     # Set the marker size for the second legend entry (index 1, since it is zero-based)
-    legend.legendHandles[1]._sizes = [10
+    legend.legendHandles[1]._sizes = [10]
                                      
     if sys.argv[6] == "-v"  or sys.argv[6] == "-verbose":
         plt.savefig(t0_hitmaker_dir + '/yz_reconstruction_Event' + str(n) + '.png')
