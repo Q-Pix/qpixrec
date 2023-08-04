@@ -7,6 +7,7 @@ import sys
 
 file_path = sys.argv[1]
 root_file = file_path + sys.argv[2]
+verbosity = sys.argv[3]
 
 dfoutput_dir = file_path + "rtd_dataframes/"
 functional_form_dir = file_path + "functional_form/"
@@ -56,7 +57,7 @@ if __name__ == "__main__":
     scripts_to_run = [
         ("root_to_pandas.py", root_file, dfoutput_dir, total_events, num_resets),
         ("functional_form.py", dfoutput_dir, functional_form_file, total_events, num_resets), 
-        ("t0_hitmaker.py", dfoutput_dir, functional_form_file, t0_hitmaker_dir, total_events, binWidth)
+        ("t0_hitmaker.py", dfoutput_dir, functional_form_file, t0_hitmaker_dir, total_events, binWidth, verbosity)
     ]
 
     for script_info in scripts_to_run:
