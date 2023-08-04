@@ -9,7 +9,9 @@ file_path = sys.argv[1]
 root_file = file_path + sys.argv[2]
 if len(sys.argv) > 3:
     verbosity = sys.argv[3]
-
+else:
+    verbosity = "false"
+    
 dfoutput_dir = file_path + "rtd_dataframes/"
 functional_form_dir = file_path + "functional_form/"
 functional_form_file = functional_form_dir + "functional_form.txt"
