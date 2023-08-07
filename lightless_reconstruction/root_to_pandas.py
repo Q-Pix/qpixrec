@@ -26,6 +26,7 @@ g4_df.reset_index("subentry", inplace=True)
 g4_df.reset_index("entry", inplace=True)
 g4_df.rename(columns={"entry": "event", "subentry": "TrackID"}, inplace=True)
 g4_df.to_pickle(output_path + 'g4_df.pkl')
+print("g4_df built in " + output_path + "g4_df.pkl")
 
 # Load data into DataFrames
 pixel_df = file.arrays(["pixel_x", "pixel_y"], library="pd")
@@ -64,9 +65,11 @@ column_order = ['event', 'PixelID', 'pixel_x', 'pixel_y', 'nResets', 'mean_TOA',
 resets_df = resets_df[column_order]
 main_df = resets_df.copy().reset_index(drop = True)
 main_df.to_pickle(output_path + 'main_df.pkl')
+print("main_df built in " + output_path + "main_df.pkl")
 
 main_subdf = main_df[main_df.nResets >= reset_num].copy()
 main_subdf.to_pickle(output_path + 'main_subdf.pkl')
+print("main_subdf built in " + output_path + "main_subdf.pkl")
 
 minStdDev_df = pd.DataFrame()   
 
@@ -75,3 +78,4 @@ for i in range (0, total_events):
     minStdDev_df = pd.concat([minStdDev_df, minStdDev_slice])   
     
 minStdDev_df.to_pickle(output_path + 'minStdDev_df.pkl')
+print("minStdDev_df built in " + output_path + "minStdDev_df.pkl")
