@@ -260,11 +260,11 @@ outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 def sqrt_fit_func(x_f, a_f):
     return a_f*(x_f)**(1/2)
 
-fit_func = sqrt_fit_func(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], functional_form)
+fit_func = sqrt_fit_func(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], functional_form[0])
 
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
-plt.plot(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], fit_func, '-', label='{:0.5}$*\sqrt{{Mean(ToA)}}$'.format(functional_form))
+plt.plot(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], fit_func, '-', label='{:0.5}$*\sqrt{{Mean(ToA)}}$'.format(functional_form[0]))
 plt.ylim(0, 1.2e-6)
 plt.ylabel("Min(StdDev) [s]")
 plt.xlabel("Mean(ToA) [s]")
