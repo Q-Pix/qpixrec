@@ -257,7 +257,7 @@ def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f, threshold=9):
 # Call the function and store the returned values
 outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 
-def sqrt_fit_func(x_f, a_f):
+def sqrt_fit(x_f, a_f):
     return a_f*(x_f)**(1/2)
 
 # Get the "mean_TOA" values within the specified indices
@@ -267,7 +267,7 @@ mean_TOA_values = main_df.iloc[min_deltaRMS_indices]["mean_TOA"]
 sorted_indices = np.argsort(mean_TOA_values)
 sorted_mean_TOA = mean_TOA_values.iloc[sorted_indices]
 
-fit_func = sqrt_fit_func(sorted_mean_TOA, functional_form[0])
+fit_func = sqrt_fit(sorted_mean_TOA, functional_form[0])
 
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
