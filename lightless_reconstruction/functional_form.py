@@ -260,14 +260,11 @@ outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 def sqrt_fit_func(x_f, a_f):
     return a_f*(x_f)**(1/2)
 
-# Get the indices that would sort the "mean_TOA" values
-sorted_indices = np.argsort(main_df.iloc[min_deltaRMS_indices]["mean_TOA"])
+# Get the "mean_TOA" values within the specified indices
+mean_TOA_values = main_df.iloc[min_deltaRMS_indices]["mean_TOA"]
 
-# Use the sorted indices to reorder the DataFrame
-sorted_main_df = main_df.iloc[min_deltaRMS_indices].iloc[sorted_indices]
-
-# Print the sorted "mean_TOA" values
-sorted_mean_TOA = sorted_main_df["mean_TOA"]
+# Sort the "mean_TOA" values in increasing order
+sorted_mean_TOA = sorted(mean_TOA_values)
 
 fit_func = sqrt_fit_func(sorted_mean_TOA, functional_form[0])
 
