@@ -22,7 +22,9 @@ pd.set_option('display.max_rows', 100)
 
 # For input file, use:
 dfoutput_dir = sys.argv[1]
-functional_form_file = sys.argv[2]
+functional_form_dir = sys.argv[2]
+functional_form_file = functional_form_dir + "functional_form.txt"
+outlier_file = functional_form_dir + "outliers.pkl"
 total_events = int(sys.argv[3])
 num_resets = int(sys.argv[4])
 
@@ -219,7 +221,11 @@ changed
 # =============================================================================
 
 # Relevant Functions
-def rm_outliers_func(dataframe_f):
+
+# Initialize an empty DataFrame to store outliers
+outliers_df = pd.DataFrame(columns=['event', 'PixelID'])
+
+def rm_outliers_func(dataframe_f, outliers_df):
     change = True
     outliers_idx = []
     while change:
@@ -227,10 +233,15 @@ def rm_outliers_func(dataframe_f):
         sigma = dataframe_f[dataframe_f["event_outlier"] == False]["delta_RMS"].std()
         # print("mu is "+ str(mu)+" and sigma is " + str(sigma))
         dataframe_f["Chi^2_Value"] = (mu - dataframe_f["delta_RMS"])**2 / sigma**2
-        max_chi2_idx = dataframe_f[dataframe_f["event_outlier"] == False]["Chi^2_Value"].idxmax
+        max_chi2_idx = dataframe_f[dataframe_f["event_outlier"] == False]["Chi^2_Value"].idxmax()
         if dataframe_f.loc[max_chi2_idx, "event_outlier"] == False and dataframe_f.loc[max_chi2_idx, "Chi^2_Value"] >= 9:
             dataframe_f.loc[max_chi2_idx, "event_outlier"] = True
             outliers_idx.append(max_chi2_idx)
+            
+            # Append 'event' and 'PixelID' information to outliers_df
+            event_value = dataframe_f.loc[max_chi2_idx, 'event']
+            pixel_id_value = dataframe_f.loc[max_chi2_idx, 'PixelID']
+            outliers_df = outliers_df.append({'event': event_value, 'PixelID': pixel_id_value}, ignore_index=True)
         else:
             change = False
     return outliers_idx
@@ -247,10 +258,9 @@ def rm_outliers_func(dataframe_f):
 def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f):
     dataframe_f["event_outlier"] = True
     dataframe_f.loc[min_deltaRMS_indices_f, "event_outlier"] = False
-    outliers_idx = rm_outliers_func(dataframe_f)
+    outliers_idx = rm_outliers_func(dataframe_f, outliers_df)
     poptsqrti, pcovi, rms_fiti, ti, rms_thi, rms_fiti = sqrt_fit_func(dataframe_f[(dataframe_f["event_outlier"] == False)].mean_TOA, dataframe_f[(dataframe_f["event_outlier"] == False)].RMS)
-    # print("Functional Form Constant = " +str(poptsqrti))
-    return outliers_idx, poptsqrti
+    return outliers_idx, poptsqrti, outliers_df
 
 """
     Function which calls the outlier removal function. Loops through and checks to remove all outliers. Returns the new fit parameters
@@ -261,18 +271,21 @@ def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f):
 	min_deltaRMS_indices_f: The indices of the pixels which have the minimum deltaRMS values for each event
 """
     
-outliers_idx, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
-# If plotting can use the following
-# plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
-# plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
-# # plt.scatter(main_df.iloc[outliers_idx]["mean_TOA"], main_df.iloc[outliers_idx]["RMS"], marker = '.', color='blue', label = 'Outliers')
-# plt.legend
-# plt.show
+outliers_idx, functional_form, outlier_df = outliers_loop_func(main_df, min_deltaRMS_indices)
+
+plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
+plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
+plt.scatter(main_df.iloc[outliers_idx]["mean_TOA"], main_df.iloc[outliers_idx]["RMS"], marker = '.', color='blue', label = 'Outliers')
+plt.legend
+if sys.argv[5] == "-v"  or sys.argv[5] == "-verbose":
+    plt.savefig(functional_form_dir + 'functionalform_plot.png')
 plt.close()
 print("Functional Form found: " + str(functional_form))
 
-f = open(functional_form_file,"w+")
-f.write(str(functional_form[0]))
-f.close()
-print("Output written to " + functional_form_file)
+f1 = open(functional_form_file,"w+")
+f1.write(str(functional_form[0]))
+f1.close()
+print("Fit parameter written to " + functional_form_file)
 
+outlier_df.to_pickle(outlier_file)
+print("Outlier events written to " + outlier_file)
