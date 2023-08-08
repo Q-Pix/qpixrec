@@ -264,8 +264,7 @@ def sqrt_fit(x_f, a_f):
 mean_TOA_values = main_df.iloc[min_deltaRMS_indices]["mean_TOA"].to_numpy()
 
 # Sort the "mean_TOA" values in increasing order
-sorted_indices = np.argsort(mean_TOA_values)
-sorted_mean_TOA = mean_TOA_values.iloc[sorted_indices]
+sorted_mean_TOA = np.sort(mean_TOA_values)
 
 fit_func = sqrt_fit(sorted_mean_TOA, functional_form[0])
 
