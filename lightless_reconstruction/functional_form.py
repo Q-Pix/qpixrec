@@ -221,51 +221,41 @@ changed
 # =============================================================================
 
 # Relevant Functions
+def rm_outliers_func(dataframe_f, threshold=9):
+    # Identify outliers based on the specified threshold
+    mu = dataframe_f[dataframe_f["event_outlier"] == False]["delta_RMS"].mean()
+    sigma = dataframe_f[dataframe_f["event_outlier"] == False]["delta_RMS"].std()
+    dataframe_f["Chi^2_Value"] = (mu - dataframe_f["delta_RMS"])**2 / sigma**2
+    outliers = dataframe_f[(dataframe_f["event_outlier"] == False) & (dataframe_f["Chi^2_Value"] >= threshold)]
+    return outliers
 
-# Relevant Functions
-def rm_outliers_func(dataframe_f):
-    change = True
-    outliers_idx = []
-    while change:
-        mu = dataframe_f[dataframe_f["event_outlier"] == False]["delta_RMS"].mean()
-        sigma = dataframe_f[dataframe_f["event_outlier"] == False]["delta_RMS"].std()
-        # print("mu is "+ str(mu)+" and sigma is " + str(sigma))
-        dataframe_f["Chi^2_Value"] = (mu - dataframe_f["delta_RMS"])**2 / sigma**2
-        max_chi2_idx = dataframe_f[dataframe_f["event_outlier"] == False]["Chi^2_Value"].idxmax
-        if dataframe_f.loc[max_chi2_idx, "event_outlier"] == False and dataframe_f.loc[max_chi2_idx, "Chi^2_Value"] >= 9:
-            dataframe_f.loc[max_chi2_idx, "event_outlier"] = True
-            outliers_idx.append(max_chi2_idx)
-        else:
-            change = False
-    return outliers_idx
-"""
-    Removed the outliers which are beyond 9 chi**2 from the sqrt fit function
+def remove_outliers(dataframe_f, outliers):
+    # Mark the outliers as removed in the original DataFrame
+    dataframe_f.loc[outliers.index, "event_outlier"] = True
 
-    Parameters
-    ----------
-	dataframe_f: The relevant dataframe for your data
-"""
-
-
-
-def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f):
+def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f, threshold=9):
+    # Mark the initial outliers based on deltaRMS values
     dataframe_f["event_outlier"] = True
     dataframe_f.loc[min_deltaRMS_indices_f, "event_outlier"] = False
-    outliers_idx = rm_outliers_func(dataframe_f)
-    poptsqrti, pcovi, rms_fiti, ti, rms_thi, rms_fiti = sqrt_fit_func(dataframe_f[(dataframe_f["event_outlier"] == False)].mean_TOA, dataframe_f[(dataframe_f["event_outlier"] == False)].RMS)
-    # print("Functional Form Constant = " +str(poptsqrti))
-    return outliers_idx, poptsqrti
 
-"""
-    Function which calls the outlier removal function. Loops through and checks to remove all outliers. Returns the new fit parameters
+    # Iteratively identify and remove outliers
+    all_outliers = pd.DataFrame(columns=dataframe_f.columns)  # Store all identified outliers
+    while True:
+        outliers = rm_outliers_func(dataframe_f, threshold=threshold)
+        if outliers.empty:
+            break
+        
+        remove_outliers(dataframe_f, outliers)
+        all_outliers = pd.concat([all_outliers, outliers])
 
-    Parameters
-    ----------
-	dataframe_f: The relevant dataframe for your data
-	min_deltaRMS_indices_f: The indices of the pixels which have the minimum deltaRMS values for each event
-"""
+    # Calculate poptsqrti, pcovi, and other values
+    valid_data = dataframe_f[dataframe_f["event_outlier"] == False]
+    poptsqrti, pcovi, rms_fiti, ti, rms_thi, rms_fiti = sqrt_fit_func(valid_data.mean_TOA, valid_data.RMS)
     
-outliers_idx, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
+    return all_outliers, poptsqrti
+
+# Call the function and store the returned values
+outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
@@ -281,6 +271,6 @@ f1.write(str(functional_form[0]))
 f1.close()
 print("Fit parameter written to " + functional_form_file)
 
-print(outliers_idx)
+print(outliers_df)
 #outlier_df.to_pickle(outlier_file)
 #print("Outlier events written to " + outlier_file)
