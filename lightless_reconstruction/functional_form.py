@@ -225,7 +225,7 @@ changed
 # Initialize an empty DataFrame to store outliers
 outlier_df = pd.DataFrame(columns=['event', 'PixelID'])
 
-def rm_outliers_func(dataframe_f, outliers_df):
+def rm_outliers_func(dataframe_f):
     change = True
     outliers_idx = []
     while change:
@@ -240,11 +240,10 @@ def rm_outliers_func(dataframe_f, outliers_df):
             event_value = dataframe_f.loc[max_chi2_idx, 'event']
             pixel_id_value = dataframe_f.loc[max_chi2_idx, 'PixelID']
             
-            # Append 'event' and 'PixelID' information to outliers_df
-            outliers_df = outliers_df.append({'event': event_value, 'PixelID': pixel_id_value}, ignore_index=True)
+            # Return the extracted values to be appended in outliers_loop_func
+            return event_value, pixel_id_value
         else:
             change = False
-    return outliers_idx, outliers_df
 """
     Removed the outliers which are beyond 9 chi**2 from the sqrt fit function
 
@@ -258,12 +257,15 @@ def rm_outliers_func(dataframe_f, outliers_df):
 def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f):
     dataframe_f["event_outlier"] = True
     dataframe_f.loc[min_deltaRMS_indices_f, "event_outlier"] = False
+    outliers_idx = []
     
-    # Pass outlier_df to rm_outliers_func
-    outliers_idx, outlier_df = rm_outliers_func(dataframe_f, outlier_df)
-    
+    for _ in range(len(dataframe_f)):  # Repeat the process for all rows
+        event_value, pixel_id_value = rm_outliers_func(dataframe_f)
+        if event_value is not None and pixel_id_value is not None:
+            outlier_df = outlier_df.append({'event': event_value, 'PixelID': pixel_id_value}, ignore_index=True)
+        
     poptsqrti, pcovi, rms_fiti, ti, rms_thi, rms_fiti = sqrt_fit_func(dataframe_f[(dataframe_f["event_outlier"] == False)].mean_TOA, dataframe_f[(dataframe_f["event_outlier"] == False)].RMS)
-    return outliers_idx, poptsqrti, outlier_df
+    return outliers_idx, poptsqrti
 
 """
     Function which calls the outlier removal function. Loops through and checks to remove all outliers. Returns the new fit parameters
@@ -274,7 +276,7 @@ def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f):
 	min_deltaRMS_indices_f: The indices of the pixels which have the minimum deltaRMS values for each event
 """
     
-outliers_idx, functional_form, outlier_df = outliers_loop_func(main_df, min_deltaRMS_indices)
+outliers_idx, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
