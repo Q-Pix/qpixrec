@@ -267,7 +267,7 @@ fit_func = sqrt_fit(sorted_mean_TOA, functional_form[0])
 
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
-plt.plot(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], fit_func, '-', label='{:0.5}$*\sqrt{{Mean(ToA)}}$'.format(functional_form[0]))
+plt.plot(sorted_mean_TOA, fit_func, '-', label='{:0.5}$*\sqrt{{Mean(ToA)}}$'.format(functional_form[0]))
 plt.ylim(0, 1.2e-6)
 plt.ylabel("Min(StdDev) [s]")
 plt.xlabel("Mean(ToA) [s]")
@@ -283,4 +283,5 @@ f1.close()
 print("Fit parameter written to " + functional_form_file)
 
 outliers_df = outliers_df[['event', 'PixelID', 'pixel_x', 'pixel_y', 'Chi^2_Value']]
+outliers_df.to_pickle(outlier_file)
 print("Outlier events written to " + outlier_file)
