@@ -282,5 +282,5 @@ for n in range(total_events):
         plt.savefig(t0_hitmaker_dir + 'yz_reconstruction_Event' + str(n) + '.png')
     plt.close()
 
-    if sys.argv[6] == "-v"  or sys.argv[6] == "-verbose":   
-        print("YZ Reconstruction plot for events saved to " + t0_hitmaker_dir + 'yz_reconstruction_Event#.png')
+if sys.argv[6] == "-v"  or sys.argv[6] == "-verbose":   
+    print("YZ Reconstruction plot for events saved to " + t0_hitmaker_dir + 'yz_reconstruction_Event#.png')
