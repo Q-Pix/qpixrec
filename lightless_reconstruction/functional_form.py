@@ -257,7 +257,7 @@ def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f, threshold=9):
 # Call the function and store the returned values
 outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 
-plt.ylim(0, 0.1)
+plt.ylim(0, 1.2e-6)
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
 #plt.scatter(main_df.iloc[outliers_idx]["mean_TOA"], main_df.iloc[outliers_idx]["RMS"], marker = '.', color='blue', label = 'Outliers')
