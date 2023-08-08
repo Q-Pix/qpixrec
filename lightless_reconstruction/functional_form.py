@@ -274,6 +274,7 @@ plt.xlabel("Mean(ToA) [s]")
 plt.legend()
 if sys.argv[5] == "-v"  or sys.argv[5] == "-verbose":
     plt.savefig(functional_form_dir + 'functional_form_plot.png')
+    print('Functional Form Plot written to ' + functional_form_dir + 'functional_form_plot.png')
 plt.close()
 print("Functional Form found: " + str(functional_form))
 
