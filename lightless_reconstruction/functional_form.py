@@ -266,10 +266,10 @@ sorted_mean_TOA = main_df.iloc[min_deltaRMS_indices].sort_values(by=['mean_TOA']
 fit_func = sqrt_fit(sorted_mean_TOA, functional_form[0])
 
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
-plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
+plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'Min(StdDev) of Event')
 plt.plot(sorted_mean_TOA, fit_func, '--', color='red', label='{:0.5}$*\sqrt{{Mean(ToA)}}$'.format(functional_form[0]))
 plt.ylim(0, 1.1*main_df.iloc[min_deltaRMS_indices]["RMS"].max())
-plt.ylabel("StdDev [s]")
+plt.ylabel("Min(StdDev) [s]")
 plt.xlabel("Mean(ToA) [s]")
 plt.legend()
 if sys.argv[5] == "-v"  or sys.argv[5] == "-verbose":
