@@ -257,6 +257,7 @@ def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f, threshold=9):
 # Call the function and store the returned values
 outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 
+plt.ylim(0, 0.1)
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
 #plt.scatter(main_df.iloc[outliers_idx]["mean_TOA"], main_df.iloc[outliers_idx]["RMS"], marker = '.', color='blue', label = 'Outliers')
@@ -271,6 +272,5 @@ f1.write(str(functional_form[0]))
 f1.close()
 print("Fit parameter written to " + functional_form_file)
 
-print(outliers_df)
-#outlier_df.to_pickle(outlier_file)
-#print("Outlier events written to " + outlier_file)
+outliers_df = outliers_df[['event', 'PixelID', 'pixel_x', 'pixel_y', 'Chi^2_Value']]
+print("Outlier events written to " + outlier_file)
