@@ -260,7 +260,7 @@ outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 def sqrt_fit_func(x_f, a_f):
     return a_f*(x_f)**(1/2)
 
-fit_func = sqrt_fit_func(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], functional_form[0])
+fit_func = sqrt_fit_func(main_df.iloc[min_deltaRMS_indices]["mean_TOA"].sort_values(), functional_form[0])
 
 plt.scatter(main_df.iloc[min_deltaRMS_indices]["mean_TOA"], main_df.iloc[min_deltaRMS_indices]["RMS"], marker = '.', color='blue', label = 'Outliers')
 plt.scatter(main_df[(main_df["event_outlier"] == False)].mean_TOA, main_df[(main_df["event_outlier"] == False)].RMS , marker = '.', color='orange', label = 'RMS Min')
