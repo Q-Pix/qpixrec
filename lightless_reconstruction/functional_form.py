@@ -285,5 +285,7 @@ if sys.argv[5] == "-v"  or sys.argv[5] == "-verbose":
 plt.close()
 
 outliers_df = outliers_df[['event', 'PixelID', 'pixel_x', 'pixel_y', 'Chi^2_Value']]
+outliers_df.rename(columns={'pixel_x': 'x_mm'}, inplace=True)
+outliers_df.rename(columns={'pixel_y': 'y_mm'}, inplace=True)
 outliers_df.to_pickle(outlier_file)
 print("Outlier events written to " + outlier_file)
