@@ -257,6 +257,13 @@ def outliers_loop_func(dataframe_f, min_deltaRMS_indices_f, threshold=9):
 # Call the function and store the returned values
 outliers_df, functional_form = outliers_loop_func(main_df, min_deltaRMS_indices)
 
+print("Functional Form found: " + str(functional_form))
+
+f1 = open(functional_form_file,"w+")
+f1.write(str(functional_form[0]))
+f1.close()
+print("Fit parameter written to " + functional_form_file)
+
 def sqrt_fit(x_f, a_f):
     return a_f*(x_f)**(1/2)
 
@@ -276,12 +283,6 @@ if sys.argv[5] == "-v"  or sys.argv[5] == "-verbose":
     plt.savefig(functional_form_dir + 'functional_form_plot.png')
     print('Functional Form Plot written to ' + functional_form_dir + 'functional_form_plot.png')
 plt.close()
-print("Functional Form found: " + str(functional_form))
-
-f1 = open(functional_form_file,"w+")
-f1.write(str(functional_form[0]))
-f1.close()
-print("Fit parameter written to " + functional_form_file)
 
 outliers_df = outliers_df[['event', 'PixelID', 'pixel_x', 'pixel_y', 'Chi^2_Value']]
 outliers_df.to_pickle(outlier_file)
