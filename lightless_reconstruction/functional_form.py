@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+
+# -----------------------------------------------------------------------------
+# functional_form.py
+#
+# Determines a functional form for t0 through optimization of the min(RMS) of the events
+# * Author: Ben Meleton, Carter Eikenbary
+# * Creation date: 10 August 2023
+#
+# Usage: python /path/to/functional_form.py /path/to/dataframe/input/ /path/to/functionalform/output/ total_events num_resets verbosity
+# Notes: User must load foss/2020b and source qpix-setup before running this script
+# -----------------------------------------------------------------------------
+
+
 # ==================================================================================================
 # Importing Modules
 # ==================================================================================================
