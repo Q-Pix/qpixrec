@@ -7,10 +7,15 @@ import sys
 
 file_path = sys.argv[1]
 root_file = file_path + sys.argv[2]
-
+if len(sys.argv) > 3:
+    verbosity = sys.argv[3]
+else:
+    verbosity = "false"
+    
 dfoutput_dir = file_path + "rtd_dataframes/"
 functional_form_dir = file_path + "functional_form/"
 functional_form_file = functional_form_dir + "functional_form.txt"
+outlier_file = functional_form_dir + "outlier_df.pkl"
 t0_hitmaker_dir = file_path + "t0_hitmaker/"
 
 #total events in root file (standard = 100)
@@ -55,8 +60,8 @@ if __name__ == "__main__":
     # List of analysis scripts along with there system arguments
     scripts_to_run = [
         ("root_to_pandas.py", root_file, dfoutput_dir, total_events, num_resets),
-        ("functional_form.py", dfoutput_dir, functional_form_file, total_events, num_resets), 
-        ("t0_hitmaker.py", dfoutput_dir, functional_form_file, t0_hitmaker_dir, total_events, binWidth)
+        ("functional_form.py", dfoutput_dir, functional_form_dir, total_events, num_resets, verbosity), 
+        ("t0_hitmaker.py", dfoutput_dir, functional_form_file, t0_hitmaker_dir, total_events, binWidth, verbosity)
     ]
 
     for script_info in scripts_to_run:
