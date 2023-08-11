@@ -1,6 +1,4 @@
 # matplotlib for plotting
-import matplotlib
-matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 
 # numpy to calculate RMS with np.std()

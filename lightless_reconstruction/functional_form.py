@@ -2,8 +2,6 @@
 # Importing Modules
 # ==================================================================================================
 import sys
-import matplotlib
-matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import pandas as pd
 #Pandas is useful for importing files and extracting data
