@@ -8,7 +8,7 @@
 # * Creation date: 10 August 2023
 #
 # Usage: python /path/to/run_analysis.py /path/to/root/ file.root -v
-# Notes: User must load foss/2020b and source qpix-setup before running this script
+# Notes: HPRC users must load foss/2020b and source qpix-setup before running this script
 # -----------------------------------------------------------------------------
 
 ####GLOBAL DEFINITIONS####
