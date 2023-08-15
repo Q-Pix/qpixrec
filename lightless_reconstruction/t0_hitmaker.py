@@ -8,7 +8,7 @@
 # * Creation date: 10 August 2023
 #
 # Usage: python /path/to/t0_hitmaker.py /path/to/functionalform/functional_form.txt /path/to/t0_hitmaker/output/ total_events binWidth verbosity
-# Notes: User must load foss/2020b and source qpix-setup before running this script
+# Notes: HPRC users must load foss/2020b and source qpix-setup before running this script
 # -----------------------------------------------------------------------------
 
 
