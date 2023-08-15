@@ -1,4 +1,25 @@
+#!/usr/bin/env python
+
+# -----------------------------------------------------------------------------
+# t0_hitmaker.py
+#
+# Determines a t0 and reconstructs the Z positions from the functional form for all events
+# * Author: Carter Eikenbary, Nolan Tenpas
+# * Creation date: 10 August 2023
+#
+# Usage: python /path/to/t0_hitmaker.py /path/to/functionalform/functional_form.txt /path/to/t0_hitmaker/output/ total_events binWidth verbosity
+# Notes: HPRC users must load foss/2020b and source qpix-setup before running this script
+# -----------------------------------------------------------------------------
+
+
+# ==================================================================================================
+# Importing Modules
+# ==================================================================================================
+
 # matplotlib for plotting
+
+import matplotlib
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 
 # numpy to calculate RMS with np.std()

@@ -1,6 +1,15 @@
-#qpix-setup must be sourced
-#run with  'python root_to_pandas.py /path/to/root/file /path/to/output/location total_events reset_cutoff
+#!/usr/bin/env python
 
+# -----------------------------------------------------------------------------
+# root_to_pandas.py
+#
+# Constructs pandas DataFrames from a ROOT file (qpixrtd output)
+# * Author: Carter Eikenbary
+# * Creation date: 10 August 2023
+#
+# Usage: python /path/to/root_to_pandas.py /path/to/file.root  /path/to/dataframe/output/ total_events reset_num
+# Notes: HPRC users must load foss/2020b and source qpix-setup before running this script
+# -----------------------------------------------------------------------------
 
 import pandas as pd
 import numpy as np
