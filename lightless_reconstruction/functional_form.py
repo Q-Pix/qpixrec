@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+
+# -----------------------------------------------------------------------------
+# functional_form.py
+#
+# Determines a functional form for t0 through optimization of the min(RMS) of the events
+# * Author: Ben Meleton, Carter Eikenbary
+# * Creation date: 10 August 2023
+#
+# Usage: python /path/to/functional_form.py /path/to/dataframe/input/ /path/to/functionalform/output/ total_events num_resets verbosity
+# Notes: HPRC users must load foss/2020b and source qpix-setup before running this script
+# -----------------------------------------------------------------------------
+
+
 # ==================================================================================================
 # Importing Modules
 # ==================================================================================================
@@ -287,5 +301,7 @@ if sys.argv[5] == "-v"  or sys.argv[5] == "-verbose":
 plt.close()
 
 outliers_df = outliers_df[['event', 'PixelID', 'pixel_x', 'pixel_y', 'Chi^2_Value']]
+outliers_df.rename(columns={'pixel_x': 'x_mm'}, inplace=True)
+outliers_df.rename(columns={'pixel_y': 'y_mm'}, inplace=True)
 outliers_df.to_pickle(outlier_file)
 print("Outlier events written to " + outlier_file)
