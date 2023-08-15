@@ -8,7 +8,7 @@
 # * Creation date: 10 August 2023
 #
 # Usage: python /path/to/functional_form.py /path/to/dataframe/input/ /path/to/functionalform/output/ total_events num_resets verbosity
-# Notes: User must load foss/2020b and source qpix-setup before running this script
+# Notes: HPRC users must load foss/2020b and source qpix-setup before running this script
 # -----------------------------------------------------------------------------
 
 
