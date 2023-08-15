@@ -8,7 +8,7 @@
 # * Creation date: 10 August 2023
 #
 # Usage: python /path/to/root_to_pandas.py /path/to/file.root  /path/to/dataframe/output/ total_events reset_num
-# Notes: User must load foss/2020b and source qpix-setup before running this script
+# Notes: HPRC users must load foss/2020b and source qpix-setup before running this script
 # -----------------------------------------------------------------------------
 
 import pandas as pd
