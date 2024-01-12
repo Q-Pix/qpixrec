@@ -74,7 +74,7 @@ def gaussFitHist(data_f, bins_f):
 t0_shifts = []
 
 # Loop over all events
-for event_id in range(events):  
+for event_id in range(total_events):  
     RMS_Expected_noshift = expected_const * np.sqrt(main_df[(main_df.event == event_id)].mean_TOA)
     difference_noshift = (main_df[(main_df.event == event_id)].RMS - RMS_Expected_noshift)         
     min_val = min(difference_noshift) 
