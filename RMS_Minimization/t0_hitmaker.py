@@ -130,6 +130,9 @@ for event_id in range(total_events):
     # Append the optimal t0_shift to the array
     t0_shifts.append(optimal_t0_shift)
 
+
+t0_shifts = np.array(t0_shifts)
+
 # Plot the t0 distribution
 
 # Get plot limits for binning
