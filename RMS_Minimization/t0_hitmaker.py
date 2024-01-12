@@ -189,7 +189,7 @@ full_df['x_pos'] = (full_df['pixel_x'] * 4 - 2)/10 # Subtract 2mm to get in cent
 full_df['y_pos'] = (full_df['pixel_y'] * 4 - 2)/10 # Subtract 2mm to get in center of the pixel (pixels are 4mm wide)
 full_df['z_pos'] = elec_vel * full_df.ToF
 
-column_order = ['event', 'PixelID', 'nResets', 'mean_ToA', 'RMS', 't0',  'ToF, 'x_pos', 'y_pos', 'z_pos', 'reset_time'] 
+column_order = ['event', 'PixelID', 'nResets', 'mean_ToA', 'RMS', 't0', 'ToF', 'x_pos', 'y_pos', 'z_pos', 'reset_time'] 
 full_df = full_df[column_order]
 
 full_df.to_pickle(t0_hitmaker_dir + '/reconstruction_df.pkl')
