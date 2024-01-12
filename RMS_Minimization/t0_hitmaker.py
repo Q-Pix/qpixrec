@@ -132,35 +132,43 @@ for event_id in range(total_events):
 
 
 t0_shifts = np.array(t0_shifts)
+t0_cut = t0_shifts[(t0_shifts >= (t0_shifts.mean() - 2*t0_shifts.std())) & (t0_shifts <= (t0_shifts.mean() + 2*t0_shifts.std()))]
 
 # Plot the t0 distribution
-
-# Get plot limits for binning
 plt.hist(t0_shifts)
 xmin, xmax = plt.xlim()
 plt.close()
 
-# Create plot parameters
 plt.figure(figsize = (9,9))
 plt.xlabel('t0 (sec)', fontsize = 16)
-plt.title('t0 Distribution - All Events', fontsize = 20)
-
-# Plot histogram based on bins defined by plot limits
-plt.hist(t0_shifts, bins = np.arange(xmin, xmax, binWidth))
+plt.title('t0 Distribution - All Events [DS = 1], Z=AllZ', fontsize = 20)
+y,x,_ = plt.hist(t0_shifts, bins = np.arange(xmin, xmax, binWidth))
 
 # Get a gaussian fit to the distribution
-t0_gauss_params, hist_data = gaussFitHist(t0_shifts, 
+t0_gauss_params, t0_fit_errors, hist_data = gaussFitHist(t0_cut, 
                                           np.arange(xmin, xmax, binWidth)) 
 
 # Plot the Gaussian Fit
 xs = np.linspace(xmin, xmax, 1000)
 ys = gaussFunc(xs, *t0_gauss_params)
-plt.plot(xs, ys, '--', color = 'crimson', label = 'Gaussian Fit')
+# Calculate the range for the plot based on 2 sigma
+sigma = t0_gauss_params[2]
+mean = t0_gauss_params[1]
+lower_bound = mean - 2 * sigma
+upper_bound = mean + 2 * sigma
+
+# Filter xs and ys within the 2 sigma range
+filtered_xs = xs[(xs >= lower_bound) & (xs <= upper_bound)]
+filtered_ys = ys[(xs >= lower_bound) & (xs <= upper_bound)]
+
+# Plot the filtered data
+plt.plot(filtered_xs, filtered_ys, '--', color='crimson', label=('Gaussian Fit: \n' + r'$\mu = {:.4e} \pm {:.4e}$' '\n' + r'$\sigma = {:.4e} \pm {:.4e}$').format(t0_gauss_params[1], t0_fit_errors[1], t0_gauss_params[2], t0_fit_errors[2]))
 
 # Plot vertical line at t = 0
 x = [0]*2
 y = np.linspace(0, hist_data['yvalues'].max(), 2)
 plt.plot(x, y, '--', color = 'lime')
+plt.legend(loc="upper left")
 
 # Show and close plot
 plt.savefig(t0_hitmaker_dir + '/t0_distribution.png')
