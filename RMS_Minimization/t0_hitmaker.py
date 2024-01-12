@@ -193,8 +193,8 @@ print("t0 output written to " + output_file_path)
 
 t0_df = pd.DataFrame({'t0': t0_shifts})
 
-# Merge t0 values into resets_df
-full_df = resets_df.merge(t0_df, how = 'right', on = 'event').copy().reset_index(drop = True)
+# Merge t0 values into full_df
+full_df = full_df.merge(t0_df, how = 'right', on = 'event').copy().reset_index(drop = True)
 full_df['ToF'] = (full_df.mean_ToA - full_df.t0)
 full_df['x_pos'] = (full_df['pixel_x'] * 4 - 2)/10 # Subtract 2mm to get in center of the pixel (pixels are 4mm wide)
 full_df['y_pos'] = (full_df['pixel_y'] * 4 - 2)/10 # Subtract 2mm to get in center of the pixel (pixels are 4mm wide)
