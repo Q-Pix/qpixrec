@@ -195,12 +195,12 @@ t0_df = pd.DataFrame(data = {'event' : range(total_events), 't0': t0_shifts})
 
 # Merge t0 values into full_df
 full_df = full_df.merge(t0_df, how = 'right', on = 'event').copy().reset_index(drop = True)
-full_df['ToF'] = (full_df.mean_TOA - full_df.t0)
+full_df['TOF'] = (full_df.mean_TOA - full_df.t0)
 full_df['x_pos'] = (full_df['pixel_x'] * 4 - 2)/10 # Subtract 2mm to get in center of the pixel (pixels are 4mm wide)
 full_df['y_pos'] = (full_df['pixel_y'] * 4 - 2)/10 # Subtract 2mm to get in center of the pixel (pixels are 4mm wide)
-full_df['z_pos'] = elec_vel * full_df.ToF
+full_df['z_pos'] = elec_vel * full_df.TOF
 
-column_order = ['event', 'PixelID', 'nResets', 'mean_ToA', 'RMS', 't0', 'ToF', 'x_pos', 'y_pos', 'z_pos', 'reset_time'] 
+column_order = ['event', 'PixelID', 'nResets', 'mean_TOA', 'RMS', 't0', 'TOF', 'x_pos', 'y_pos', 'z_pos', 'reset_time'] 
 full_df = full_df[column_order]
 
 full_df.to_pickle(t0_hitmaker_dir + '/reconstruction_df.pkl')
