@@ -34,7 +34,7 @@ total_events = "1000"
 num_resets = "5"
 
 # Define bin width to be used for distribution plots and Gaussian fits
-binWidth = "5e-05"
+binWidth = "8e-05"
 
 ##########################
 
