@@ -76,7 +76,7 @@ main_df = resets_df.copy().reset_index(drop = True)
 main_df.to_pickle(output_path + 'main_df.pkl')
 print("main_df built in " + output_path + "main_df.pkl")
 
-main_subdf = main_df[main_df.nResets >= reset_num].copy()
+main_subdf = main_df[main_df.nResets > reset_num].copy()
 main_subdf.to_pickle(output_path + 'main_subdf.pkl')
 print("main_subdf built in " + output_path + "main_subdf.pkl")
 
