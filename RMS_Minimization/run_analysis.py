@@ -31,7 +31,7 @@ t0_hitmaker_dir = file_path + "t0_hitmaker/"
 total_events = "1000"
 
 #number of minimum resets for 'good' event (standard = ?)
-num_resets = "8"
+num_resets = "5"
 
 # Define bin width to be used for distribution plots and Gaussian fits
 binWidth = "5e-05"
