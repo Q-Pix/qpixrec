@@ -72,6 +72,7 @@ def gaussFitHist(data_f, bins_f):
     return gauss_params, fit_errors, gaussDataPoints
 
 t0_shifts = []
+search_range = 1e-9  # Define the search range (smaller than defined_range)
 
 # Loop over all events
 for event_id in range(total_events):  
@@ -81,7 +82,6 @@ for event_id in range(total_events):
     max_val = max(1.2e-7, -1*min_val)
     defined_range = min((max_val - min_val)/5, 6e-8)
     extended_range = defined_range/2  
-    search_range = 1e-9  # Define the search range (smaller than defined_range)
     
    # Define the objective function for the current event
     def objective(t0_shift):
