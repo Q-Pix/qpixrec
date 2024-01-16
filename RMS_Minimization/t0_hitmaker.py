@@ -191,7 +191,7 @@ with open(output_file_path, 'w') as file:
 
 print("t0 output written to " + output_file_path)
 
-t0_df = pd.DataFrame({'t0': t0_shifts})
+t0_df = pd.DataFrame(data = {'event' : range(total_events), 't0': t0_shifts})
 
 # Merge t0 values into full_df
 full_df = full_df.merge(t0_df, how = 'right', on = 'event').copy().reset_index(drop = True)
