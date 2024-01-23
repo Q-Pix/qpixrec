@@ -109,9 +109,8 @@ for event_id in range(total_events):
 
         # Use the adjusted range to calculate weighted average and actual average
         selected_data = difference[((difference >= optimal_range_start) & (difference <= optimal_range_end))]
-        reset_weight = main_df[(main_df.event == event_id)].nReset.values
 
-        weighted_avg = np.average(selected_data, weights=reset_weight)
+        weighted_avg = np.average(selected_data)
         return (weighted_avg ** 2)
       
           # Initial guess for t0_shift (for simulation t0=0)
