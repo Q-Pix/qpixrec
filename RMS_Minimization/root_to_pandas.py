@@ -79,12 +79,3 @@ print("main_df built in " + output_path + "main_df.pkl")
 main_subdf = main_df[main_df.nResets > reset_num].copy()
 main_subdf.to_pickle(output_path + 'main_subdf.pkl')
 print("main_subdf built in " + output_path + "main_subdf.pkl")
-
-minStdDev_df = pd.DataFrame()   
-
-for i in range (0, total_events):
-    minStdDev_slice= main_subdf[main_subdf.event == i].nsmallest(1, ['RMS'])
-    minStdDev_df = pd.concat([minStdDev_df, minStdDev_slice])   
-    
-minStdDev_df.to_pickle(output_path + 'minStdDev_df.pkl')
-print("minStdDev_df built in " + output_path + "minStdDev_df.pkl")
