@@ -8,6 +8,17 @@
 # * Creation date: 2 December 2024
 # -----------------------------------------------------------------------------
 
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+from scipy.optimize import curve_fit
+from scipy.optimize import minimize
+
+diff_L = 6.8223 #cm**2/s
+elec_vel = 164800 #cm**2/s
+expected_const = np.sqrt(2*diff_L/elec_vel**2)
+
 def std_exp(mean):
     return expected_const * np.sqrt(mean)
 
