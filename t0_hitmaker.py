@@ -27,8 +27,6 @@ import sys
 import warnings
 warnings.filterwarnings("ignore")
 
-from cdf_definitions import *
-
 dfoutput_dir = sys.argv[1]
 t0_hitmaker_dir = sys.argv[2]
 reset_threshold = int(sys.argv[3])
