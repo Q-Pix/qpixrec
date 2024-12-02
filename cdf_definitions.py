@@ -18,6 +18,7 @@ from scipy.optimize import minimize
 diff_L = 6.8223 #cm**2/s
 elec_vel = 164800 #cm**2/s
 expected_const = np.sqrt(2*diff_L/elec_vel**2)
+n = 0
 
 def std_exp(mean):
     return expected_const * np.sqrt(mean)
