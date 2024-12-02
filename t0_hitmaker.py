@@ -27,7 +27,7 @@ import sys
 import warnings
 warnings.filterwarnings("ignore")
 
-import cdf_definitions
+from cdf_definitions import *
 
 dfoutput_dir = sys.argv[1]
 t0_hitmaker_dir = sys.argv[2]
