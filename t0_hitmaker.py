@@ -108,57 +108,6 @@ def process_singlecdf(df):
 
     return pd.DataFrame(data)
 
-def process_singlecdf_t0shifted(df, t0):
-    singlecdf_event = []
-    singlecdf_pixid = []
-    singlecdf_amp = []
-    singlecdf_mean = []
-    singlecdf_std = []
-    singlecdf_diff = []
-
-    for i in range(len(df)):
-        reset_times = np.array(df['reset_time'].reset_index().iloc[i][1]) - t0
-        num_resets = len(reset_times)
-        reset_count = np.arange(1, num_resets + 1)  
-        
-        initial_params = [num_resets + 0.1, np.mean(reset_times), np.std(reset_times)]
-        
-        try:
-            cdf_params, cdf_covariance = curve_fit(single_cdf, reset_times, reset_count, p0=initial_params)
-            reset_amp = cdf_params[0]
-            reset_mean = cdf_params[1]
-            reset_std = cdf_params[2]
-            reset_diff = std_difference(reset_mean, reset_std)              
-            fitted_values = single_cdf(reset_times, *cdf_params)
-            residuals = reset_count - fitted_values
-            sum_residuals = np.sum(np.abs(residuals))
-            fitted_values = single_cdf(reset_times, *cdf_params)
-            residuals = reset_count - fitted_values
-            sum_residuals = np.sum(np.abs(residuals))
-            sum_residuals_per_reset = sum_residuals/num_resets                
-            
-            if ((reset_amp > num_resets) and (reset_amp < num_resets + 1) and (sum_residuals_per_reset < 0.02)):
-                singlecdf_event.append(n)
-                singlecdf_pixid.append(df.iloc[i].PixelID)
-                singlecdf_amp.append(reset_amp)
-                singlecdf_mean.append(reset_mean)
-                singlecdf_std.append(reset_std)
-                singlecdf_diff.append(reset_diff)
-            
-        except RuntimeError:
-            continue
-            
-    data = {
-    'event': singlecdf_event,
-    'PixelID': singlecdf_pixid,
-    'Amp': singlecdf_amp,
-    'Mean': singlecdf_mean,
-    'StD': singlecdf_std,
-    'Diff': singlecdf_diff,
-    }
-
-    return pd.DataFrame(data)
-
 def process_singlehit(df, t0):
     singlecdf_event = []
     singlecdf_pixid = []
@@ -362,11 +311,14 @@ for n in range(total_events):
 
     rtd_t0candidate_eventdf = rtd_t0candidate_df[(rtd_t0candidate_df.event == n)]
     
+    #try a single CDF fit on all pixels
     singlecdf_noshift_results = process_singlecdf(rtd_t0candidate_eventdf)
     singlecdf_diff = singlecdf_noshift_results['Diff']
 
+    #prune the data to remove obvious multi-hit pixels
     singlecdf_diff_cut = singlecdf_diff[singlecdf_diff < (np.median(singlecdf_diff) + (np.median(singlecdf_diff) - np.min(singlecdf_diff)))]
     singlecdf_diff_cut = singlecdf_diff_cut[singlecdf_diff_cut < (np.median(singlecdf_diff_cut) + (np.median(singlecdf_diff_cut) - np.min(singlecdf_diff_cut)))]
+
     print("well-measured pixels =", len(singlecdf_diff_cut))
     if len(singlecdf_diff_cut) == 0:
         print("Skipping Event, no well-measured pixels")
@@ -412,7 +364,7 @@ for n in range(total_events):
         weighted_avg = np.mean(difference)
         return (weighted_avg ** 2)
       
-          # Initial guess for t0_shift (for simulation t0=0)
+    # Initial guess for t0_shift (for simulation t0=0)
     initial_t0_shift = 0
     
     # Define the optimization tolerance for higher precision
@@ -427,27 +379,13 @@ for n in range(total_events):
     optimal_t0_shift = result.x[0]
     print("t0 = ", optimal_t0_shift) 
     
-    singlecdf_shifted_results = process_singlecdf_t0shifted(rtd_t0candidate_eventdf, optimal_t0_shift)
-    singlecdf_diff_shifted = singlecdf_shifted_results['Diff']
 
-    singlecdf_diff_shifted_cut =  singlecdf_diff_shifted[ singlecdf_diff_shifted < (np.median(singlecdf_diff_shifted) + (np.median( singlecdf_diff_shifted) - np.min(singlecdf_diff_shifted)))]
-    singlecdf_diff_shifted_cut = singlecdf_diff_shifted_cut[singlecdf_diff_shifted_cut < (np.median(singlecdf_diff_shifted_cut) + (np.median(singlecdf_diff_shifted_cut) - np.min(singlecdf_diff_shifted_cut)))]
-    hist, bin_edges = np.histogram(singlecdf_diff_shifted_cut, bins=10)
-    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2    
-    p0 = [max(hist), np.median(bin_centers), np.std(bin_centers)]
-    try:
-        popt, pcov = curve_fit(single_gaussian, bin_centers, hist, p0=p0)
-        diff_amp = popt[0]
-        diff_mean = popt[1]
-        diff_std = popt[2]
-    except RuntimeError:
-        print("Gaussian Fitting of delta(sigma) distribution failed")  
-        
-    
+    #Shift the reset_times by t0 and look for hits
     rtd_allpix_eventdf = rtd_allpix_df[rtd_allpix_df.event == n]
     rtd_allpix_eventdf['t0'] = optimal_t0_shift
     print("pixels in event = ", len(rtd_df[rtd_df.event ==n]))
-    
+
+    #Create a singlehit dataframe for the pixels that fit well to a single hit  
     singlehit_event = process_singlehit(rtd_allpix_eventdf, optimal_t0_shift)
     singlehit_percentile_high = np.percentile(singlehit_event[singlehit_event.Amp >= 3]['Avg_Residual'], 85)   
     
@@ -468,7 +406,9 @@ for n in range(total_events):
     )
 
     notsinglehit_event = notsinglehit_event[notsinglehit_event['_merge'] == 'left_only'].drop(columns=['_merge'])
-
+    #Move on to pixels that don't fit well to a single hit
+    
+    #Create a doublehit dataframe for the pixels that fit well to a double hit
     doublehit_event = process_doublehit(notsinglehit_event[notsinglehit_event.nResets >= 4], optimal_t0_shift)
     doublehit_percentile_high = np.percentile(doublehit_event[(doublehit_event.Amp1 + doublehit_event.Amp2) >= 5]['Avg_Residual'], 85)   
     
@@ -489,7 +429,9 @@ for n in range(total_events):
     )
 
     notdoublehit_event = notdoublehit_event[notdoublehit_event['_merge'] == 'left_only'].drop(columns=['_merge'])   
-    
+     #Move on to pixels that don't fit well to a double hit
+        
+    #Create a triplehit dataframe for the pixels that fit well to a triple hit
     triplehit_event = process_triplehit(notdoublehit_event[notdoublehit_event.nResets >= 6], optimal_t0_shift)
     triplehit_percentile_high = np.percentile(triplehit_event[(triplehit_event.Amp1 + triplehit_event.Amp2 + triplehit_event.Amp3) >= 7]['Avg_Residual'], 85)   
     
@@ -501,7 +443,8 @@ for n in range(total_events):
     
     triplehit_event['t0'] = optimal_t0_shift
     triplehit_df = triplehit_df.append(triplehit_event, ignore_index=True)
-    
+  
+    #Create an unfitpix dataframe for the pixels that did not fit to single, double, or triple hits
     unfitpix_event = notdoublehit_event.merge(
         triplehit_event[['event', 'PixelID']],
         on=['event', 'PixelID'],
