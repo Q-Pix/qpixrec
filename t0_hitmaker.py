@@ -460,7 +460,19 @@ for n in range(total_events):
     unfitpix_event['t0'] = optimal_t0_shift
 
     unfitpix_df = unfitpix_df.append(unfitpix_event)       
-    
+
+singlehit_df.to_pickle(t0_hitmaker_dir + '/singlehit_df.pkl')
+print("List of single-hit pixels written to " + t0_hitmaker_dir + 'singlehit_df.pkl')
+
+doublehit_df.to_pickle(t0_hitmaker_dir + '/doublehit_df.pkl')
+print("List of double-hit pixels written to " + t0_hitmaker_dir + 'doublehit_df.pkl')
+
+triplehit_df.to_pickle(t0_hitmaker_dir + '/triplehit_df.pkl')
+print("List of triple-hit pixels written to " + t0_hitmaker_dir + 'triplehit_df.pkl')
+
+unfitpix_df.to_pickle(t0_hitmaker_dir + '/unfitpix_df.pkl')
+print("List of unfit pixels written to " + t0_hitmaker_dir + 'unfitpix_df.pkl')
+
 #Reformat singlehit_df
 singlehit_transformed = singlehit_df[['event', 'PixelID', 'Amp', 'Mean', 't0']]
 
@@ -518,8 +530,4 @@ hits_df = hits_df.drop(columns=['pixel_x'])
 hits_df = hits_df.drop(columns=['pixel_y'])
 
 hits_df.to_pickle(t0_hitmaker_dir + '/hits_df.pkl')
-print("Dataframe written to " + t0_hitmaker_dir + 'hits_df.pkl')
-
-unfitpix_df.to_pickle(t0_hitmaker_dir + '/unfitpix_df.pkl')
-print("Dataframe written to " + t0_hitmaker_dir + 'unfitpix_df.pkl')
-
+print("List of hits written to " + t0_hitmaker_dir + 'hits_df.pkl')
