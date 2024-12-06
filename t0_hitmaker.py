@@ -86,7 +86,7 @@ def process_singlecdf(df):
             sum_residuals = np.sum(np.abs(residuals))
             sum_residuals_per_reset = sum_residuals/num_resets                
             
-            if ((reset_amp > num_resets) and (reset_amp < num_resets + 1) and (sum_residuals_per_reset < 0.025)):
+            if ((reset_amp > num_resets) and (reset_amp < num_resets + 1) and (sum_residuals_per_reset < 0.03)):
                 singlecdf_event.append(n)
                 singlecdf_pixid.append(df.iloc[i].PixelID)
                 singlecdf_amp.append(reset_amp)
