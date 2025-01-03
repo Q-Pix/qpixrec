@@ -410,49 +410,58 @@ for n in range(total_events):
     
     #Create a doublehit dataframe for the pixels that fit well to a double hit
     doublehit_event = process_doublehit(notsinglehit_event[notsinglehit_event.nResets >= 4], optimal_t0_shift)
-    doublehit_percentile_high = np.percentile(doublehit_event[(doublehit_event.Amp1 + doublehit_event.Amp2) >= 5]['Avg_Residual'], 85)   
     
-    doublehit_cut = np.median(doublehit_event[(doublehit_event.Avg_Residual <= doublehit_percentile_high)]['Avg_Residual']) + 5*np.std(doublehit_event[(doublehit_event.Avg_Residual <= doublehit_percentile_high)]['Avg_Residual'], ddof=1)
-    
-    doublehit_event = doublehit_event[doublehit_event.Avg_Residual < doublehit_cut]   
-    
-    print("double hit pixels in event = ", len(doublehit_event))
-
-    doublehit_event['t0'] = optimal_t0_shift
-    doublehit_df = doublehit_df.append(doublehit_event, ignore_index=True)
+    if not doublehit_event.empty:
+        doublehit_percentile_high = np.percentile(doublehit_event[(doublehit_event.Amp1 + doublehit_event.Amp2) >= 5]['Avg_Residual'], 85)   
         
-    notdoublehit_event = notsinglehit_event.merge(
-        doublehit_event[['event', 'PixelID']],
-        on=['event', 'PixelID'],
-        how='left',
-        indicator=True
-    )
+        doublehit_cut = np.median(doublehit_event[(doublehit_event.Avg_Residual <= doublehit_percentile_high)]['Avg_Residual']) + 5*np.std(doublehit_event[(doublehit_event.Avg_Residual <= doublehit_percentile_high)]['Avg_Residual'], ddof=1)
+    
+        doublehit_event = doublehit_event[doublehit_event.Avg_Residual < doublehit_cut]   
+    
+        print("double hit pixels in event = ", len(doublehit_event))
 
-    notdoublehit_event = notdoublehit_event[notdoublehit_event['_merge'] == 'left_only'].drop(columns=['_merge'])   
+        doublehit_event['t0'] = optimal_t0_shift
+        doublehit_df = doublehit_df.append(doublehit_event, ignore_index=True)
+        
+        notdoublehit_event = notsinglehit_event.merge(
+            doublehit_event[['event', 'PixelID']],
+            on=['event', 'PixelID'],
+            how='left',
+            indicator=True
+        )
+
+        notdoublehit_event = notdoublehit_event[notdoublehit_event['_merge'] == 'left_only'].drop(columns=['_merge'])
+    else:
+        notdoublehit_event = notsinglehit_event   
      #Move on to pixels that don't fit well to a double hit
         
     #Create a triplehit dataframe for the pixels that fit well to a triple hit
     triplehit_event = process_triplehit(notdoublehit_event[notdoublehit_event.nResets >= 6], optimal_t0_shift)
-    triplehit_percentile_high = np.percentile(triplehit_event[(triplehit_event.Amp1 + triplehit_event.Amp2 + triplehit_event.Amp3) >= 7]['Avg_Residual'], 85)   
     
-    triplehit_cut = np.median(triplehit_event[(triplehit_event.Avg_Residual <= triplehit_percentile_high)]['Avg_Residual']) + 5*np.std(triplehit_event[(triplehit_event.Avg_Residual <= triplehit_percentile_high)]['Avg_Residual'], ddof=1)
+    if not triplehit_event.empty:
+        triplehit_percentile_high = np.percentile(triplehit_event[(triplehit_event.Amp1 + triplehit_event.Amp2 + triplehit_event.Amp3) >= 7]['Avg_Residual'], 85)   
     
-    triplehit_event = triplehit_event[triplehit_event.Avg_Residual < triplehit_cut]  
+        triplehit_cut = np.median(triplehit_event[(triplehit_event.Avg_Residual <= triplehit_percentile_high)]['Avg_Residual']) + 5*np.std(triplehit_event[(triplehit_event.Avg_Residual <= triplehit_percentile_high)]['Avg_Residual'], ddof=1)
     
-    print("triple hit pixels in event = ", len(triplehit_event))
+        triplehit_event = triplehit_event[triplehit_event.Avg_Residual < triplehit_cut]  
     
-    triplehit_event['t0'] = optimal_t0_shift
-    triplehit_df = triplehit_df.append(triplehit_event, ignore_index=True)
+        print("triple hit pixels in event = ", len(triplehit_event))
+    
+        triplehit_event['t0'] = optimal_t0_shift
+        triplehit_df = triplehit_df.append(triplehit_event, ignore_index=True)
   
-    #Create an unfitpix dataframe for the pixels that did not fit to single, double, or triple hits
-    unfitpix_event = notdoublehit_event.merge(
-        triplehit_event[['event', 'PixelID']],
-        on=['event', 'PixelID'],
-        how='left',
-        indicator=True
-    )
+        #Create an unfitpix dataframe for the pixels that did not fit to single, double, or triple hits
+        unfitpix_event = notdoublehit_event.merge(
+            triplehit_event[['event', 'PixelID']],
+            on=['event', 'PixelID'],
+            how='left',
+            indicator=True
+        )
     
-    unfitpix_event = unfitpix_event[unfitpix_event['_merge'] == 'left_only'].drop(columns=['_merge'])   
+        unfitpix_event = unfitpix_event[unfitpix_event['_merge'] == 'left_only'].drop(columns=['_merge'])
+    else:
+        unfitpix_event = notdoublehit_event    
+
     print("unfit pixels = ", len(unfitpix_event))
     print("remaining pixels that could fit quadruple cdf = ", len(unfitpix_event[unfitpix_event.nResets >= 8])) 
     
