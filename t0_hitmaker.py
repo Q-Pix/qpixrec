@@ -311,6 +311,10 @@ for n in range(total_events):
 
     rtd_t0candidate_eventdf = rtd_t0candidate_df[(rtd_t0candidate_df.event == n)]
     
+    if rtd_t0candidate_eventdf.empty:
+        print(f"Skipping event {n} because no pixels have 3-5 resets.")
+        continue
+    
     #try a single CDF fit on all pixels
     singlecdf_noshift_results = process_singlecdf(rtd_t0candidate_eventdf)
     singlecdf_diff = singlecdf_noshift_results['Diff']
