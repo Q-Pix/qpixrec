@@ -422,8 +422,11 @@ for n in range(total_events):
     doublehit_event = process_doublehit(notsinglehit_event[notsinglehit_event.nResets >= 4], optimal_t0_shift)
     
     if not doublehit_event.empty:
-        doublehit_percentile_high = np.percentile(doublehit_event[(doublehit_event.Amp1 + doublehit_event.Amp2) >= 5]['Avg_Residual'], 85)   
-        
+        if not doublehit_event[(doublehit_event.Amp1 + doublehit_event.Amp2) >= 5].empty:
+            doublehit_percentile_high = np.percentile(doublehit_event[(doublehit_event.Amp1 + doublehit_event.Amp2) >= 5]['Avg_Residual'], 85)      
+        else:
+            doublehit_percentile_high = 0.1
+
         doublehit_cut = np.median(doublehit_event[(doublehit_event.Avg_Residual <= doublehit_percentile_high)]['Avg_Residual']) + 5*np.std(doublehit_event[(doublehit_event.Avg_Residual <= doublehit_percentile_high)]['Avg_Residual'], ddof=1)
     
         doublehit_event = doublehit_event[doublehit_event.Avg_Residual < doublehit_cut]   
@@ -449,8 +452,11 @@ for n in range(total_events):
     triplehit_event = process_triplehit(notdoublehit_event[notdoublehit_event.nResets >= 6], optimal_t0_shift)
     
     if not triplehit_event.empty:
-        triplehit_percentile_high = np.percentile(triplehit_event[(triplehit_event.Amp1 + triplehit_event.Amp2 + triplehit_event.Amp3) >= 7]['Avg_Residual'], 85)   
-    
+        if not triplehit_event[(triplehit_event.Amp1 + triplehit_event.Amp2 + triplehit_event.Amp3) >= 7].empty:
+            triplehit_percentile_high = np.percentile(triplehit_event[(triplehit_event.Amp1 + triplehit_event.Amp2 + triplehit_event.Amp3) >= 7]['Avg_Residual'], 85)   
+        else:
+            triplehit_percentile_high = 0.1
+            
         triplehit_cut = np.median(triplehit_event[(triplehit_event.Avg_Residual <= triplehit_percentile_high)]['Avg_Residual']) + 5*np.std(triplehit_event[(triplehit_event.Avg_Residual <= triplehit_percentile_high)]['Avg_Residual'], ddof=1)
     
         triplehit_event = triplehit_event[triplehit_event.Avg_Residual < triplehit_cut]  
