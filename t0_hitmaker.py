@@ -312,13 +312,14 @@ for n in range(total_events):
     rtd_t0candidate_eventdf = rtd_t0candidate_df[(rtd_t0candidate_df.event == n)]
     
     if rtd_t0candidate_eventdf.empty:
-        print(f"Skipping event {n} because no pixels have 3-5 resets.")
+        print(f"Skipping event {n} because no pixels have {reset_min}-{reset_max} resets.")
         continue
     
     #try a single CDF fit on all pixels
     singlecdf_noshift_results = process_singlecdf(rtd_t0candidate_eventdf)
     singlecdf_diff = singlecdf_noshift_results['Diff']
-
+    print("single cdf fit pixels =", len(singlecdf_diff))
+    
     #prune the data to remove obvious multi-hit pixels
     singlecdf_diff_cut = singlecdf_diff[singlecdf_diff < (np.median(singlecdf_diff) + (np.median(singlecdf_diff) - np.min(singlecdf_diff)))]
     singlecdf_diff_cut = singlecdf_diff_cut[singlecdf_diff_cut < (np.median(singlecdf_diff_cut) + (np.median(singlecdf_diff_cut) - np.min(singlecdf_diff_cut)))]
@@ -352,10 +353,15 @@ for n in range(total_events):
         print("Not enough well-measured pixels for Gaussian Fitting of delta(sigma) distribution \n Using NumPy estimations")
         diff_mean = np.median(singlecdf_diff_cut)
         diff_std = np.std(singlecdf_diff_cut)
-        diff_low = diff_mean - 2*diff_std
-        diff_high = diff_mean + 2*diff_std
+        diff_low = diff_mean - 3*diff_std
+        diff_high = diff_mean + 3*diff_std
     
     t0_event = singlecdf_noshift_results[(singlecdf_diff > diff_low) & (singlecdf_diff < diff_high)]
+    
+    if len(t0_event) < 2:
+        print("Not enough well-meausred pixels for t0 evaluation")
+        continue
+
     t0_df = t0_df.append(t0_event, ignore_index=True)
     
     meanvaln = t0_event['Mean']
@@ -374,7 +380,7 @@ for n in range(total_events):
     # Define the optimization tolerance for higher precision
     tolerance = 1e-15    
     # Define bounds for t0_shift
-    bounds = [(-0.001, min(meanvaln))]
+    bounds = [(-0.1, min(meanvaln))]
 
     # Perform the nonlinear optimization using the "Nelder-Mead" algorithm
     result = minimize(objective, initial_t0_shift, method='Nelder-Mead', bounds=bounds, tol=tolerance)
