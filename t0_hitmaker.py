@@ -397,25 +397,34 @@ for n in range(total_events):
 
     #Create a singlehit dataframe for the pixels that fit well to a single hit  
     singlehit_event = process_singlehit(rtd_allpix_eventdf, optimal_t0_shift)
-    singlehit_percentile_high = np.percentile(singlehit_event[singlehit_event.Amp >= 3]['Avg_Residual'], 85)   
     
-    singlehit_cut = np.median(singlehit_event[(singlehit_event.Avg_Residual <= singlehit_percentile_high)]['Avg_Residual']) + 5*np.std(singlehit_event[(singlehit_event.Avg_Residual <= singlehit_percentile_high)]['Avg_Residual'], ddof=1)
+    if not singlehit_event.empty:
+        
+        if not singlehit_event[singlehit_event.Amp >= 3].empty:
+            singlehit_percentile_high = np.percentile(singlehit_event[singlehit_event.Amp >= 3]['Avg_Residual'], 85)   
+        else:
+            singlehit_percentile_high = 0.1
+            
+        singlehit_cut = np.median(singlehit_event[(singlehit_event.Avg_Residual <= singlehit_percentile_high)]['Avg_Residual']) + 5*np.std(singlehit_event[(singlehit_event.Avg_Residual <= singlehit_percentile_high)]['Avg_Residual'], ddof=1)
     
-    singlehit_event = singlehit_event[singlehit_event.Avg_Residual < singlehit_cut]   
+        singlehit_event = singlehit_event[singlehit_event.Avg_Residual < singlehit_cut]   
     
-    print("single hit pixels in event = ", len(singlehit_event))
+        print("single hit pixels in event = ", len(singlehit_event))
     
-    singlehit_event['t0'] = optimal_t0_shift
-    singlehit_df = singlehit_df.append(singlehit_event, ignore_index=True)
+        singlehit_event['t0'] = optimal_t0_shift
+        singlehit_df = singlehit_df.append(singlehit_event, ignore_index=True)
     
-    notsinglehit_event = rtd_allpix_eventdf.merge(
-        singlehit_event[['event', 'PixelID']],
-        on=['event', 'PixelID'],
-        how='left',
-        indicator=True
-    )
+        notsinglehit_event = rtd_allpix_eventdf.merge(
+            singlehit_event[['event', 'PixelID']],
+            on=['event', 'PixelID'],
+            how='left',
+            indicator=True
+        )
 
-    notsinglehit_event = notsinglehit_event[notsinglehit_event['_merge'] == 'left_only'].drop(columns=['_merge'])
+        notsinglehit_event = notsinglehit_event[notsinglehit_event['_merge'] == 'left_only'].drop(columns=['_merge'])
+    else:
+        notsinglehit_event = rtd_allpix_eventdf
+        
     #Move on to pixels that don't fit well to a single hit
     
     #Create a doublehit dataframe for the pixels that fit well to a double hit
@@ -446,6 +455,7 @@ for n in range(total_events):
         notdoublehit_event = notdoublehit_event[notdoublehit_event['_merge'] == 'left_only'].drop(columns=['_merge'])
     else:
         notdoublehit_event = notsinglehit_event   
+        
      #Move on to pixels that don't fit well to a double hit
         
     #Create a triplehit dataframe for the pixels that fit well to a triple hit
