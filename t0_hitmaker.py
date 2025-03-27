@@ -36,7 +36,7 @@ reset_max = int(sys.argv[5])
 diff_L = 6.8223 #cm**2/s
 elec_vel = 164800 #cm**2/s
 expected_const = np.sqrt(2*diff_L/elec_vel**2)
-energy_per_hit = (23.6*reset_threshold)*(1e-6)
+energy_per_reset = (23.6*reset_threshold)*(1e-6)
 ##########################
 
 def std_exp(mean):
@@ -546,7 +546,7 @@ hits_df = pd.concat(
 )
 
 # Calculate 'Energy' and 'Z'
-hits_df['Energy'] = hits_df['Amp'] * energy_per_hit
+hits_df['Energy'] = hits_df['Amp'] * energy_per_reset
 hits_df['Z'] = hits_df['Mean'] * elec_vel
 
 # Drop 'Amp' and 'Mean' columns if no longer needed
