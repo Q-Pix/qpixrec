@@ -41,7 +41,6 @@ event_low = args.event_low
 event_high = args.event_high
 
 input_path = os.path.dirname(qpixrec_path)
-output_path = qpixrec_path + "/deltaZ_analysis/"
 
 def std_exp(mean):
     return expected_const * np.sqrt(mean)
