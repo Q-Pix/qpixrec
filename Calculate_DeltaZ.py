@@ -41,7 +41,6 @@ event_low = args.event_low
 event_high = args.event_high
 
 input_path = os.path.dirname(qpixrec_path)
-output_path = qpixrec_path + "deltaZ_analysis/"
 
 def std_exp(mean):
     return expected_const * np.sqrt(mean)
@@ -76,12 +75,12 @@ elec_vel = 164800 #cm**2/s
 expected_const = np.sqrt(2*diff_L/elec_vel**2)
 
 #Read in rtd data
-rtd_df = pd.read_pickle(input_path + "rtd_dataframe/rtd_df.pkl").reset_index(drop = True)
-g4_df = pd.read_pickle(input_path + "rtd_dataframe/g4_df.pkl").reset_index(drop = True)
+rtd_df = pd.read_pickle(input_path + "/rtd_dataframe/rtd_df.pkl").reset_index(drop = True)
+g4_df = pd.read_pickle(input_path + "/rtd_dataframe/g4_df.pkl").reset_index(drop = True)
 total_events = int(max(rtd_df.event) + 1)
 
-singlehit_df = pd.read_pickle(input_path + "t0_hitmaker/singlehit_df.pkl").reset_index(drop = True)
-hits_df = pd.read_pickle(input_path + "t0_hitmaker/hits_df.pkl").reset_index(drop = True)
+singlehit_df = pd.read_pickle(input_path + "/t0_hitmaker/singlehit_df.pkl").reset_index(drop = True)
+hits_df = pd.read_pickle(input_path + "/t0_hitmaker/hits_df.pkl").reset_index(drop = True)
 
 cdf_t0s = []
 cdf_Zs = []
